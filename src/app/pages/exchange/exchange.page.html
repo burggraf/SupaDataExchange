@@ -1,0 +1,52 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Data Exchange</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  
+  <ion-list>
+    <ion-list-header>
+      <ion-label>
+        <b>Configure Data Exchange</b>
+      </ion-label>
+    </ion-list-header>
+  
+    <ion-item>
+      <ion-label>Source</ion-label>
+      <ion-select placeholder="Select Source" interface="action-sheet" [(ngModel)]="source">
+        <ion-select-option value="csv">CSV / Tab / Delimited File</ion-select-option>
+        <ion-select-option value="fixed">Fixed Format File</ion-select-option>
+        <ion-select-option value="dbf">DBF</ion-select-option>
+        <ion-select-option value="sqlite">SQLite</ion-select-option>
+        <ion-select-option value="mysql">MySQL</ion-select-option>
+        <ion-select-option value="sqlserver">MS SQL Server</ion-select-option>
+        <ion-select-option value="postgres">PostgreSQL</ion-select-option>
+        <ion-select-option value="redshift">Redshift</ion-select-option>
+      </ion-select>
+    </ion-item>
+  
+    <ion-item>
+      <ion-label>Destination</ion-label>
+      <ion-select placeholder="Select Destination" interface="action-sheet" [(ngModel)]="desination">
+        <ion-select-option value="csv">CSV / Tab / Delimited File</ion-select-option>
+        <ion-select-option value="fixed">Fixed Format File</ion-select-option>
+        <ion-select-option value="dbf">DBF</ion-select-option>
+        <ion-select-option value="sqlite">SQLite</ion-select-option>
+        <ion-select-option value="mysql">MySQL</ion-select-option>
+        <ion-select-option value="sqlserver">MS SQL Server</ion-select-option>
+        <ion-select-option value="postgres">PostgreSQL</ion-select-option>
+        <ion-select-option value="redshift">Redshift</ion-select-option>
+      </ion-select>
+    </ion-item>
+  
+  </ion-list>
+
+  {{ source | json}}<br><br>
+  {{ desination | json }}
+
+</ion-content>

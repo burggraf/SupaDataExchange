@@ -38,7 +38,7 @@
         <ng-container *ngFor="let location of locations; let i = index;">
           <ion-select-option [value]="location.name">{{location.name}}</ion-select-option>
         </ng-container>
-        <ion-select-option (click)="console.log('clicked')">ADD NEW SOURCE LOCATION</ion-select-option>
+        <ion-select-option>ADD NEW SOURCE LOCATION</ion-select-option>
       </ion-select>
     </ion-item>
     
@@ -52,27 +52,26 @@
         <ng-container *ngFor="let location of locations; let i = index;">
           <ion-select-option [value]="location.name">{{location.name}}</ion-select-option>
         </ng-container>
-        <ion-select-option (click)="console.log('clicked')">ADD NEW DESTINATION LOCATION</ion-select-option>
+        <ion-select-option>ADD NEW DESTINATION LOCATION</ion-select-option>
       </ion-select>
     </ion-item>
 
   
   </ion-list>
 
-  <ion-list>
-    <ion-list-header>
-      <ion-label>
-        <b>Destination Settings</b>
-      </ion-label>
-    </ion-list-header>
-  
 
 
-  </ion-list>
+  <div class="ion-padding" *ngIf="index !== null">
+    <ion-button expand="block" color="success" (click)="run()"><b>Run this exchange</b></ion-button>
+  </div>
 
+  <div class="ion-padding" *ngIf="index !== null">
+    <ion-button expand="block" color="danger" (click)="delete()"><b>Delete this exchange</b></ion-button>
+  </div>
 
-  exchange: {{ exchange | json }}
-
+  <div class="ion-padding">
+    <pre>{{ result }}</pre>
+  </div>
 
 
 </ion-content>

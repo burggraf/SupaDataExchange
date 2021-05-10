@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-location',
@@ -6,6 +7,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./location.page.scss'],
 })
 export class LocationPage implements OnInit {
+  public index = null;
   public location = {
     type: '',
     name: '',
@@ -13,19 +15,17 @@ export class LocationPage implements OnInit {
     user: '',
     password: ''
   }
-  constructor() { }
+  constructor(private router: Router, private activatedRoute: ActivatedRoute) { }
 
   ngOnInit() {
-    let strLocations = localStorage.getItem('locations');
-    console.log('strLocations', strLocations);
+    this.index = this.activatedRoute.snapshot.paramMap.get('index');
+    if (this.index !== null) {
+      this.location = this.getLocations()[this.index];
+    }
   }
 
   save() {
-    let strLocations = localStorage.getItem('locations');
-    let locations = [];
-    if (strLocations) {
-      locations = JSON.parse(strLocations);
-    }
+    const locations = this.getLocations();
     console.log('locations', locations);
     const result = locations.findIndex(obj => {
       return obj.name === this.location.name;
@@ -36,5 +36,27 @@ export class LocationPage implements OnInit {
       locations.push(this.location);
     }
     localStorage.setItem('locations', JSON.stringify(locations));
+    this.router.navigateByUrl('/locations');
   }
+
+  delete() {
+    if (this.index !== null) {
+      const locations = this.getLocations();
+      locations.splice(this.index, 1);
+      localStorage.setItem('locations', JSON.stringify(locations));
+      this.router.navigateByUrl('/locations');    
+    }
+  }
+
+
+  getLocations() {
+    let strLocations = localStorage.getItem('locations');
+    let locations = [];
+    if (strLocations) {
+      locations = JSON.parse(strLocations);
+    }
+    return locations;
+  }
+  
 }
+

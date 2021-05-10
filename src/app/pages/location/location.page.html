@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
+      <ion-back-button defaultHref="/locations"></ion-back-button>
     </ion-buttons>
     <ion-title>Location</ion-title>
     <ion-buttons slot="end">
@@ -64,6 +64,9 @@
 
   </ion-list>
   
+  <div class="ion-padding" *ngIf="index !== null">
+    <ion-button expand="block" color="danger" (click)="delete()">Delete this Location</ion-button>
+  </div>
     
 
 

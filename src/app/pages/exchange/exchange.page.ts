@@ -6,9 +6,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./exchange.page.scss'],
 })
 export class ExchangePage implements OnInit {
-  public source = '';
+  public source = 'csv';
   public desination = 'postgres';
-  
+
   constructor() { }
 
   ngOnInit() {

@@ -18,6 +18,14 @@ const routes: Routes = [
   {
     path: 'exchange',
     loadChildren: () => import('./pages/exchange/exchange.module').then( m => m.ExchangePageModule)
+  },
+  {
+    path: 'locations',
+    loadChildren: () => import('./pages/locations/locations.module').then( m => m.LocationsPageModule)
+  },
+  {
+    path: 'location',
+    loadChildren: () => import('./pages/location/location.module').then( m => m.LocationPageModule)
   }
 ];
 

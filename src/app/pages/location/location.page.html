@@ -1,0 +1,74 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Location</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="save()">
+        <ion-icon slot="icon-only" name="checkmark"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  
+  <ion-list>
+    <ion-list-header>
+      <ion-label>
+        <b>Edit a data location</b>
+      </ion-label>
+    </ion-list-header>
+  
+    <!-- csv|fixed|db3|ixf|sqlite|mysql|mssql -->
+
+    <ion-item>
+      <ion-label position="stacked"><b>Name</b></ion-label>
+      <ion-input [(ngModel)]="location.name" placeholder="friendly name"></ion-input>
+    </ion-item>  
+
+    <ion-item>
+      <ion-label><b>Type</b></ion-label>
+      <ion-select placeholder="type" interface="action-sheet" [(ngModel)]="location.type">
+        <ion-select-option value="csv">CSV / Tab / Delimited File</ion-select-option>
+        <ion-select-option value="fixed">Fixed Format File</ion-select-option>
+        <ion-select-option value="db3">DBF</ion-select-option>
+        <ion-select-option value="sqlite">SQLite</ion-select-option>
+        <ion-select-option value="mysql">MySQL</ion-select-option>
+        <ion-select-option value="mssql">MS SQL Server</ion-select-option>
+        <ion-select-option value="postgres">PostgreSQL</ion-select-option>
+        <ion-select-option value="redshift">Redshift</ion-select-option>
+      </ion-select>
+    </ion-item>
+  
+    <ion-item>
+      <ion-label position="stacked"><b>Address</b></ion-label>
+      <ion-input [(ngModel)]="location.address" placeholder="https://server.com/file.csv"></ion-input>
+    </ion-item>  
+
+    <ion-list-header>
+      <ion-label>Credentials</ion-label>
+    </ion-list-header>
+
+    <ion-item>
+      <ion-label position="stacked"><b>Username</b></ion-label>
+      <ion-input [(ngModel)]="location.user" placeholder="enter username"></ion-input>
+    </ion-item>  
+    <ion-item>
+      <ion-label position="stacked"><b>Password</b></ion-label>
+      <ion-input [(ngModel)]="location.password" type="password" placeholder="enter password"></ion-input>
+    </ion-item>  
+
+
+  </ion-list>
+  
+    
+
+
+  location: {{ location | json}}<br><br>
+
+
+
+</ion-content>

@@ -16,29 +16,32 @@
       </ion-label>
     </ion-list-header>
   
+    <!-- csv|fixed|db3|ixf|sqlite|mysql|mssql -->
+
     <ion-item>
       <ion-label>Source</ion-label>
       <ion-select placeholder="Select Source" interface="action-sheet" [(ngModel)]="source">
         <ion-select-option value="csv">CSV / Tab / Delimited File</ion-select-option>
         <ion-select-option value="fixed">Fixed Format File</ion-select-option>
-        <ion-select-option value="dbf">DBF</ion-select-option>
+        <ion-select-option value="db3">DBF</ion-select-option>
         <ion-select-option value="sqlite">SQLite</ion-select-option>
         <ion-select-option value="mysql">MySQL</ion-select-option>
-        <ion-select-option value="sqlserver">MS SQL Server</ion-select-option>
+        <ion-select-option value="mssql">MS SQL Server</ion-select-option>
         <ion-select-option value="postgres">PostgreSQL</ion-select-option>
         <ion-select-option value="redshift">Redshift</ion-select-option>
       </ion-select>
     </ion-item>
+    
   
     <ion-item>
       <ion-label>Destination</ion-label>
       <ion-select placeholder="Select Destination" interface="action-sheet" [(ngModel)]="desination">
         <ion-select-option value="csv">CSV / Tab / Delimited File</ion-select-option>
         <ion-select-option value="fixed">Fixed Format File</ion-select-option>
-        <ion-select-option value="dbf">DBF</ion-select-option>
+        <ion-select-option value="db3">DBF</ion-select-option>
         <ion-select-option value="sqlite">SQLite</ion-select-option>
         <ion-select-option value="mysql">MySQL</ion-select-option>
-        <ion-select-option value="sqlserver">MS SQL Server</ion-select-option>
+        <ion-select-option value="mssql">MS SQL Server</ion-select-option>
         <ion-select-option value="postgres">PostgreSQL</ion-select-option>
         <ion-select-option value="redshift">Redshift</ion-select-option>
       </ion-select>
@@ -46,7 +49,21 @@
   
   </ion-list>
 
-  {{ source | json}}<br><br>
-  {{ desination | json }}
+  <ion-list>
+    <ion-list-header>
+      <ion-label>
+        <b>Destination Settings</b>
+      </ion-label>
+    </ion-list-header>
+  
+
+
+  </ion-list>
+
+
+  source: {{ source | json}}<br><br>
+  destination: {{ desination | json }}
+
+
 
 </ion-content>

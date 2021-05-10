@@ -20,32 +20,31 @@
 
     <ion-item>
       <ion-label>Source</ion-label>
-      <ion-select placeholder="Select Source" interface="action-sheet" [(ngModel)]="source">
-        <ion-select-option value="csv">CSV / Tab / Delimited File</ion-select-option>
-        <ion-select-option value="fixed">Fixed Format File</ion-select-option>
-        <ion-select-option value="db3">DBF</ion-select-option>
-        <ion-select-option value="sqlite">SQLite</ion-select-option>
-        <ion-select-option value="mysql">MySQL</ion-select-option>
-        <ion-select-option value="mssql">MS SQL Server</ion-select-option>
-        <ion-select-option value="postgres">PostgreSQL</ion-select-option>
-        <ion-select-option value="redshift">Redshift</ion-select-option>
+      <ion-select placeholder="Select Source" 
+              (ionChange)="sourceChange()"
+              interface="action-sheet" 
+              [(ngModel)]="exchange.sourcename">
+        <ng-container *ngFor="let location of locations; let i = index;">
+          <ion-select-option [value]="location.name">{{location.name}}</ion-select-option>
+        </ng-container>
+        <ion-select-option (click)="console.log('clicked')">ADD NEW SOURCE LOCATION</ion-select-option>
       </ion-select>
     </ion-item>
     
-  
+
     <ion-item>
       <ion-label>Destination</ion-label>
-      <ion-select placeholder="Select Destination" interface="action-sheet" [(ngModel)]="desination">
-        <ion-select-option value="csv">CSV / Tab / Delimited File</ion-select-option>
-        <ion-select-option value="fixed">Fixed Format File</ion-select-option>
-        <ion-select-option value="db3">DBF</ion-select-option>
-        <ion-select-option value="sqlite">SQLite</ion-select-option>
-        <ion-select-option value="mysql">MySQL</ion-select-option>
-        <ion-select-option value="mssql">MS SQL Server</ion-select-option>
-        <ion-select-option value="postgres">PostgreSQL</ion-select-option>
-        <ion-select-option value="redshift">Redshift</ion-select-option>
+      <ion-select placeholder="Select Source" 
+              (ionChange)="destinationChange()"
+              interface="action-sheet" 
+              [(ngModel)]="exchange.desinationname">
+        <ng-container *ngFor="let location of locations; let i = index;">
+          <ion-select-option [value]="location.name">{{location.name}}</ion-select-option>
+        </ng-container>
+        <ion-select-option (click)="console.log('clicked')">ADD NEW DESTINATION LOCATION</ion-select-option>
       </ion-select>
     </ion-item>
+
   
   </ion-list>
 
@@ -61,8 +60,7 @@
   </ion-list>
 
 
-  source: {{ source | json}}<br><br>
-  destination: {{ desination | json }}
+  exchange: {{ exchange | json }}
 
 
 

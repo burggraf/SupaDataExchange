@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { DataService } from '../../services/data.service';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-location',
@@ -8,55 +10,49 @@ import { Router, ActivatedRoute } from '@angular/router';
 })
 export class LocationPage implements OnInit {
   public index = null;
+  public locations = [];
   public location = {
     type: '',
     name: '',
     address: '',
-    user: '',
-    password: ''
+    u: '',
+    p: ''
   }
-  constructor(private router: Router, private activatedRoute: ActivatedRoute) { }
+  constructor(private _location: Location, private router: Router, private activatedRoute: ActivatedRoute, private dataService: DataService) { }
 
   ngOnInit() {
+  }
+  ionViewWillEnter() {
+    this.locations = this.dataService.getLocations();
     this.index = this.activatedRoute.snapshot.paramMap.get('index');
     if (this.index !== null) {
-      this.location = this.getLocations()[this.index];
+      this.location = this.locations[this.index];
     }
   }
-
   save() {
-    const locations = this.getLocations();
-    console.log('locations', locations);
-    const result = locations.findIndex(obj => {
+    const result = this.locations.findIndex(obj => {
       return obj.name === this.location.name;
     });
     if (result > -1) {
-      locations[result] = this.location;
+      this.locations[result] = this.location;
     } else {
-      locations.push(this.location);
+      this.locations.push(this.location);
     }
-    localStorage.setItem('locations', JSON.stringify(locations));
-    this.router.navigateByUrl('/locations');
+    this.dataService.saveLocations(this.locations);
+    this._location.back();
+    // this.router.navigateByUrl('/locations');
   }
 
   delete() {
     if (this.index !== null) {
-      const locations = this.getLocations();
-      locations.splice(this.index, 1);
-      localStorage.setItem('locations', JSON.stringify(locations));
-      this.router.navigateByUrl('/locations');    
-    }
+      this.locations.splice(this.index, 1);
+      this.dataService.saveLocations(this.locations);
+      this._location.back();
+      // this.router.navigateByUrl('/locations');
+      }
   }
 
 
-  getLocations() {
-    let strLocations = localStorage.getItem('locations');
-    let locations = [];
-    if (strLocations) {
-      locations = JSON.parse(strLocations);
-    }
-    return locations;
-  }
   
 }
 

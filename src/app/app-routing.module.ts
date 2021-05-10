@@ -20,6 +20,10 @@ const routes: Routes = [
     loadChildren: () => import('./pages/exchange/exchange.module').then( m => m.ExchangePageModule)
   },
   {
+    path: 'exchange/:index',
+    loadChildren: () => import('./pages/exchange/exchange.module').then( m => m.ExchangePageModule)
+  },
+  {
     path: 'locations',
     loadChildren: () => import('./pages/locations/locations.module').then( m => m.LocationsPageModule)
   },

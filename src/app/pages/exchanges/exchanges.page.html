@@ -4,10 +4,21 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>Exchanges</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="new()">
+        <ion-icon slot="icon-only" name="add"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
   </ion-toolbar>
 </ion-header>
 
 
-<ion-content>
+<ion-content class="ion-padding">
 
+  <ion-list>
+    <ion-item *ngFor="let exchange of exchanges; let i = index;" (click)="editExchange(i)">
+      {{ exchange.name }} [{{exchange.sourcename}}] => [{{exchange.desinationname}}]
+    </ion-item>
+  </ion-list>
 </ion-content>

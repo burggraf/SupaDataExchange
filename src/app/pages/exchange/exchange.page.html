@@ -1,9 +1,14 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
+      <ion-back-button></ion-back-button>
     </ion-buttons>
     <ion-title>Data Exchange</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="save()">
+        <ion-icon slot="icon-only" name="checkmark"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -17,6 +22,12 @@
     </ion-list-header>
   
     <!-- csv|fixed|db3|ixf|sqlite|mysql|mssql -->
+
+    <ion-item>
+      <ion-label position="stacked"><b>Name</b></ion-label>
+      <ion-input [(ngModel)]="exchange.name" placeholder="enter a descriptive name"></ion-input>
+    </ion-item>  
+
 
     <ion-item>
       <ion-label>Source</ion-label>

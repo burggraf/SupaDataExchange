@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from '../../services/data.service';
 import { HttpClient } from '@angular/common/http';
+import { LoadingController } from '@ionic/angular';
 
 
 @Component({
@@ -26,7 +27,8 @@ export class ExchangePage implements OnInit {
     private http: HttpClient,
     private router: Router, 
     private activatedRoute: ActivatedRoute, 
-    private dataService: DataService
+    private dataService: DataService,
+    private loadingController: LoadingController
   ) { }
 
   ngOnInit() {
@@ -84,7 +86,7 @@ export class ExchangePage implements OnInit {
     }
   }
 
-  run() {
+  async run() {
     console.log('RUN!');
     console.log('this.exchange', this.exchange);
     const sourceIndex = this.locations.findIndex(obj => {
@@ -96,11 +98,18 @@ export class ExchangePage implements OnInit {
     const source = this.locations[sourceIndex];
     const dest = this.locations[destIndex];
     console.log('*** calling http.post -> http://localhost:8080/run');
+    const loading = await this.loadingController.create({
+      /// cssClass: 'my-custom-class',
+      message: 'Exchanging data...please wait...'
+    });
+    this.result = '';
+    await loading.present();
     this.http.post("http://localhost:8080/run", {
       source: source, 
       destination: dest
     }).subscribe((data: any) => {
       console.log('*** response data', data);
+      loading.dismiss();
       if (data.error) {
         this.result = data.error;
       } else {
@@ -108,6 +117,8 @@ export class ExchangePage implements OnInit {
       }      
     }, error => {
       console.log(error);
+      this.result = JSON.stringify(error);
+      loading.dismiss();
     });
   }
 

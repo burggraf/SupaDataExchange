@@ -1,0 +1,133 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>SupaDataExchange</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="ion-padding">
+
+  <!-- Segment buttons with the first checked and the last disabled -->
+<ion-label>
+  <b>Input Type:</b> {{ sourceTypeDescription[sourceType] }}
+</ion-label><br/><br/>
+<ion-segment [(ngModel)]="sourceType" scrollable="true">
+  <ion-segment-button value="csv" style="--border-width: 1px;--border-style: solid;">
+    <ion-label>CSV</ion-label>
+  </ion-segment-button>
+  <ion-segment-button value="fixed">
+    <ion-label>Fixed</ion-label>
+  </ion-segment-button>
+  <ion-segment-button value="db3">
+    <ion-label>DBF</ion-label>
+  </ion-segment-button>
+  <ion-segment-button value="sqlite">
+    <ion-label>SQLite</ion-label>
+  </ion-segment-button>
+  <ion-segment-button value="mysql">
+    <ion-label>MySQL</ion-label>
+  </ion-segment-button>
+  <ion-segment-button value="mssql">
+    <ion-label>SQL Server</ion-label>
+  </ion-segment-button>
+  <ion-segment-button value="postgres">
+    <ion-label>PostgreSQL</ion-label>
+  </ion-segment-button>
+  <ion-segment-button value="redshift">
+    <ion-label>Redshift</ion-label>
+  </ion-segment-button>
+</ion-segment>
+
+<ion-list>
+  <ion-list-header>
+    <ion-label>
+      <b>Configure Source</b>
+    </ion-label>
+  </ion-list-header>
+
+  <ion-item *ngIf="sourceType==='csv'||sourceType==='fixed'||sourceType==='db3'||sourceType==='sqlite'">
+    <ion-label position="fixed"><b>URL</b></ion-label>
+    <ion-input [(ngModel)]="source.url" placeholder="enter url to source file" autocomplete="off"></ion-input>
+  </ion-item>  
+  <ion-item *ngIf="sourceType==='mysql'||sourceType==='mssql'||sourceType==='postgres'||sourceType==='redshift'">
+    <ion-label position="fixed"><b>Host Domain</b></ion-label>
+    <ion-input [(ngModel)]="source.domain" placeholder="enter host domain" autocomplete="off"></ion-input>
+  </ion-item>  
+  <ion-item *ngIf="sourceType==='mysql'||sourceType==='mssql'||sourceType==='postgres'||sourceType==='redshift'">
+    <ion-label position="fixed"><b>Host Port</b></ion-label>
+    <ion-input [(ngModel)]="source.port" placeholder="enter host port" autocomplete="off"></ion-input>
+  </ion-item>  
+  <ion-item *ngIf="sourceType==='mysql'||sourceType==='mssql'||sourceType==='postgres'||sourceType==='redshift'">
+    <ion-label position="fixed"><b>Database</b></ion-label>
+    <ion-input [(ngModel)]="source.dbname" placeholder="enter database name" autocomplete="off"></ion-input>
+  </ion-item>  
+
+  <ion-item *ngIf="sourceType==='mysql'||sourceType==='mssql'||sourceType==='postgres'||sourceType==='redshift'">
+    <ion-label position="fixed"><b>Username</b></ion-label>
+    <ion-input [(ngModel)]="source.u" placeholder="enter username" autocomplete="off"></ion-input>
+  </ion-item>  
+  <ion-item *ngIf="sourceType==='mysql'||sourceType==='mssql'||sourceType==='postgres'||sourceType==='redshift'">
+    <ion-label position="fixed"><b>Password</b></ion-label>
+    <ion-input [(ngModel)]="source.p" type="password" placeholder="enter password" autocomplete="off"></ion-input>
+  </ion-item>  
+</ion-list>
+
+<ion-list>
+  <ion-list-header>
+    <ion-label>
+      <b>Configure Destination</b>
+    </ion-label>
+  </ion-list-header>
+  <ion-item>
+    <ion-label position="fixed"><b>Host Domain</b></ion-label>
+    <ion-input [(ngModel)]="dest.domain" placeholder="enter host domain" autocomplete="off"></ion-input>
+  </ion-item>  
+  <ion-item>
+    <ion-label position="fixed"><b>Host Port</b></ion-label>
+    <ion-input [(ngModel)]="dest.port" placeholder="enter host port" autocomplete="off"></ion-input>
+  </ion-item>  
+  <ion-item>
+    <ion-label position="fixed"><b>Database</b></ion-label>
+    <ion-input [(ngModel)]="dest.dbname" placeholder="enter database name" autocomplete="off"></ion-input>
+  </ion-item>  
+
+  <ion-item>
+    <ion-label position="fixed"><b>Username</b></ion-label>
+    <ion-input [(ngModel)]="dest.u" placeholder="enter username" autocomplete="off"></ion-input>
+  </ion-item>  
+  <ion-item>
+    <ion-label position="fixed"><b>Password</b></ion-label>
+    <ion-input [(ngModel)]="dest.p" type="password" placeholder="enter password" autocomplete="off"></ion-input>
+  </ion-item>  
+
+
+</ion-list>
+
+<div class="ion-padding">
+  <ion-button [disabled]="!readyToImport()" expand="block" color="primary" (click)="run()"><b>Import Now</b></ion-button>
+</div>
+
+
+db://user:pass@host:port/dbname
+
+<br>
+postgresql://[user[:password]@][netloc][:port][/dbname][?option=value&...]
+
+
+</div>
+
+</ion-content>
+<!--
+        <ion-select-option value="csv">CSV / Tab / Delimited File</ion-select-option>
+        <ion-select-option value="fixed">Fixed Format File</ion-select-option>
+        <ion-select-option value="db3">DBF</ion-select-option>
+        <ion-select-option value="sqlite">SQLite</ion-select-option>
+        <ion-select-option value="mysql">MySQL</ion-select-option>
+        <ion-select-option value="mssql">MS SQL Server</ion-select-option>
+        <ion-select-option value="postgres">PostgreSQL</ion-select-option>
+        <ion-select-option value="redshift">Redshift</ion-select-option>
+
+-->

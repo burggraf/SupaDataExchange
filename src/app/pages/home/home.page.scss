@@ -1,0 +1,9 @@
+ion-segment-button {
+    --border-width: 1px;
+    --border-style: solid;
+    --border-color: lightgray;
+}
+.segment-button-checked{
+    --border-color: var(--ion-color-primary);
+    font-weight: bold;
+}

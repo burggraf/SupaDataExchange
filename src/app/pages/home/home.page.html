@@ -109,8 +109,10 @@
 <div class="ion-padding">
   <ion-button [disabled]="!readyToImport()" expand="block" color="primary" (click)="run()"><b>Import Now</b></ion-button>
 </div>
-
-
+<pre style="font-weight:bold;">
+  {{ maskedCommandLine }}
+</pre>
+<br>
 db://user:pass@host:port/dbname
 
 <br>

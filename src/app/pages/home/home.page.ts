@@ -6,6 +6,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./home.page.scss'],
 })
 export class HomePage implements OnInit {
+  public commandline = '';
+  public maskedCommandLine = '';
   public sourceType = 'csv';
   public source = {
     u: '',
@@ -36,7 +38,6 @@ export class HomePage implements OnInit {
 
   ngOnInit() {
   }
-
   readyToImport() {
     let ready = false;
     switch (this.sourceType) {
@@ -44,6 +45,9 @@ export class HomePage implements OnInit {
       case 'fixed':
       case 'db3':
       case 'sqlite':
+        // postgresql://[user[:password]@][netloc][:port][/dbname][?option=value&...]
+        this.maskedCommandLine = `pgloader --type ${this.sourceType}\n ${this.source.url.trim()}\n postgres://${this.dest.u}:${'*'.repeat(this.dest.p.length)}@${this.dest.domain}:${this.dest.port}/${this.dest.dbname}`;
+        this.commandline = `pgloader --type ${this.sourceType} ${this.source.url.trim()} postgres://${this.dest.u}:${this.dest.p}@${this.dest.domain}:${this.dest.port}/${this.dest.dbname}`;
         ready = (this.source.url.trim().length > 0 && 
             this.dest.u.trim().length > 0 &&
             this.dest.p.trim().length > 0 &&
@@ -51,13 +55,14 @@ export class HomePage implements OnInit {
             this.dest.port.trim().length > 0 &&
             this.dest.dbname.trim().length > 0
             );  
-            console.log('file ready ', ready);
         return ready;        
         break;
       case 'mysql':
       case 'mssql':
       case 'postgres':
       case 'redshift':
+        this.maskedCommandLine = `pgloader\n ${this.sourceType}://${this.source.u}:${'*'.repeat(this.source.p.length)}@${this.source.domain}:${this.source.port}/${this.source.dbname}\n ${this.source.url.trim()} postgres://${this.dest.u}:${'*'.repeat(this.dest.p.length)}@${this.dest.domain}:${this.dest.port}/${this.dest.dbname}`;
+        this.commandline = `pgloader ${this.sourceType}://${this.source.u}:${this.source.p}@${this.source.domain}:${this.source.port}/${this.source.dbname} ${this.source.url.trim()} postgres://${this.dest.u}:${'*'.repeat(this.dest.p.length)}@${this.dest.domain}:${this.dest.port}/${this.dest.dbname}`;
         ready = (
           this.source.domain.trim().length > 0 &&
           this.source.dbname.trim().length > 0 &&
@@ -67,7 +72,6 @@ export class HomePage implements OnInit {
             this.dest.port.trim().length > 0 &&
             this.dest.dbname.trim().length > 0
             );
-            console.log('db ready ', ready);
             return ready;      
         break;
     }

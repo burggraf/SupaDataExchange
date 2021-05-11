@@ -25,7 +25,8 @@ http.createServer(function (req, res) {
     });
     return; 
   } else {
-    fs.readFile("../www/" + req.url, function (err,data) {
+    // fs.readFile("../www/" + req.url, function (err,data) {
+    fs.readFile("./" + req.url, function (err,data) {
       if (err) {
         res.writeHead(404);
         res.end(JSON.stringify(err));
@@ -49,7 +50,7 @@ function run_exchange(data) {
 
   console.log(`pgloader --type ${source.type} ${source.address} ${destination.address}`);
   return new Promise((resolve, reject) => {
-    exec(`pgloader --type ${source.type} ${source.address} ${destination.address}`, (error, stdout, stderr) => {
+    exec(`/app/pgloader --type ${source.type} ${source.address} ${destination.address}`, (error, stdout, stderr) => {
       if (error) {
         reject(error.message);
       } else if (stderr) {

@@ -97,14 +97,14 @@ export class ExchangePage implements OnInit {
     });
     const source = this.locations[sourceIndex];
     const dest = this.locations[destIndex];
-    console.log('*** calling http.post -> http://localhost:8080/run');
+    console.log('*** calling http.post -> /run');
     const loading = await this.loadingController.create({
       /// cssClass: 'my-custom-class',
       message: 'Exchanging data...please wait...'
     });
     this.result = '';
     await loading.present();
-    this.http.post("http://localhost:8080/run", {
+    this.http.post("/run", {
       source: source, 
       destination: dest
     }).subscribe((data: any) => {

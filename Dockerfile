@@ -21,7 +21,7 @@ RUN npm install
 # Bundle app source
 COPY ./server .
 COPY ./www .
-COPY ./pgloader .
+COPY ./pgloader /bin
 
 EXPOSE 8080
 CMD [ "node", "server.js" ]

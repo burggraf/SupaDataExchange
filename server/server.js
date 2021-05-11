@@ -3,6 +3,7 @@ var http = require('http');
 const { exec } = require("child_process");
 
 http.createServer(function (req, res) {
+  const { method, url, headers } = req;
   if (method === "POST" && url === "/run") {
     let data = '';
     req.on('data', chunk => {
@@ -39,7 +40,7 @@ http.createServer(function (req, res) {
 }).listen(8080);
 
 function run_exchange(data) {
-  const { source, destination, commandline } = data;
+  let { source, destination, commandline } = data;
   if (!commandline) {
     if (source.u && source.p && source.address.substr(0, 11) === 'postgres://') {
       source.address = source.address.replace('postgres://', `postgres://${source.u}:${source.p}@`);
@@ -48,9 +49,6 @@ function run_exchange(data) {
       destination.address = destination.address.replace('postgres://', `postgres://${destination.u}:${destination.p}@`);
     }
     commandline = `/app/pgloader --type ${source.type} ${source.address} ${destination.address}`;  
-  }
-  if (commandline.substr(0, 5) !== '/app/') {
-    commandline = '/app/' && commandline;
   }
   console.log(commandline);
   return new Promise((resolve, reject) => {

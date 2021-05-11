@@ -3,7 +3,6 @@ var http = require('http');
 const { exec } = require("child_process");
 
 http.createServer(function (req, res) {
-  const { method, url } = req;
   if (method === "POST" && url === "/run") {
     let data = '';
     req.on('data', chunk => {
@@ -40,17 +39,22 @@ http.createServer(function (req, res) {
 }).listen(8080);
 
 function run_exchange(data) {
-  const { source, destination } = data;
-  if (source.u && source.p && source.address.substr(0, 11) === 'postgres://') {
-    source.address = source.address.replace('postgres://', `postgres://${source.u}:${source.p}@`);
+  const { source, destination, commandline } = data;
+  if (!commandline) {
+    if (source.u && source.p && source.address.substr(0, 11) === 'postgres://') {
+      source.address = source.address.replace('postgres://', `postgres://${source.u}:${source.p}@`);
+    }
+    if (destination.u && destination.p && destination.address.substr(0, 11) === 'postgres://') {
+      destination.address = destination.address.replace('postgres://', `postgres://${destination.u}:${destination.p}@`);
+    }
+    commandline = `/app/pgloader --type ${source.type} ${source.address} ${destination.address}`;  
   }
-  if (destination.u && destination.p && destination.address.substr(0, 11) === 'postgres://') {
-    destination.address = destination.address.replace('postgres://', `postgres://${destination.u}:${destination.p}@`);
+  if (commandline.substr(0, 5) !== '/app/') {
+    commandline = '/app/' && commandline;
   }
-
-  console.log(`pgloader --type ${source.type} ${source.address} ${destination.address}`);
+  console.log(commandline);
   return new Promise((resolve, reject) => {
-    exec(`/app/pgloader --type ${source.type} ${source.address} ${destination.address}`, (error, stdout, stderr) => {
+    exec(commandline, (error, stdout, stderr) => {
       if (error) {
         reject(error.message);
       } else if (stderr) {

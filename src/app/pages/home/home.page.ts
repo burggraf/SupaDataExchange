@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -34,7 +36,11 @@ export class HomePage implements OnInit {
     'postgres': 'PostgreSQL',
     'redshift': 'Redshift'
   };
-  constructor() { }
+  public result = '';
+  constructor(
+    private http: HttpClient,
+    private loadingController: LoadingController
+  ) { }
 
   ngOnInit() {
   }
@@ -76,6 +82,32 @@ export class HomePage implements OnInit {
         break;
     }
   }
+
+  async run() {
+    console.log('*** calling http.post -> /run');
+    const loading = await this.loadingController.create({
+      /// cssClass: 'my-custom-class',
+      message: 'Importing data...please wait...'
+    });
+    this.result = '';
+    await loading.present();
+    this.http.post('/run', {
+      commandline: this.commandline
+    }).subscribe((data: any) => {
+      console.log('*** response data', data);
+      loading.dismiss();
+      if (data.error) {
+        this.result = data.error;
+      } else {
+        this.result = data.result;
+      }      
+    }, error => {
+      console.log(error);
+      this.result = JSON.stringify(error);
+      loading.dismiss();
+    });
+  }
+
 
 }
 

@@ -1,5 +1,7 @@
 # FROM node:14
-FROM node:current-buster
+# FROM node:current-buster
+FROM alpine
+# FROM node
 ENV NODE_ENV=production
 
 # Create app directory
@@ -10,6 +12,8 @@ WORKDIR /app
 # where available (npm@5+)
 COPY ["package.json", "package-lock.json*", "./"]
 
+RUN apk add --update npm
+RUN apk add sqlite-dev
 RUN npm install
 # If you are building your code for production
 # RUN npm ci --only=production

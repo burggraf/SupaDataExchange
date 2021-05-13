@@ -9,6 +9,7 @@ import { IonContent } from '@ionic/angular';
 })
 export class HomePage implements OnInit {
   @ViewChild(IonContent, { static: false }) content: IonContent;
+  public id = '';
   public commandline = '';
   public maskedCommandLine = '';
   public sourceType = 'csv';
@@ -54,7 +55,7 @@ export class HomePage implements OnInit {
       case 'sqlite':
         // postgresql://[user[:password]@][netloc][:port][/dbname][?option=value&...]
         this.maskedCommandLine = `pgloader --type ${this.sourceType}\n ${this.source.url.trim()}\n postgres://${this.dest.u}:${'*'.repeat(this.dest.p.length)}@${this.dest.domain}:${this.dest.port}/${this.dest.dbname}`;
-        this.commandline = `pgloader --type ${this.sourceType} ${this.source.url.trim()} postgres://${this.dest.u}:${this.dest.p}@${this.dest.domain}:${this.dest.port}/${this.dest.dbname}`;
+        this.commandline = `--type ${this.sourceType} ${this.source.url.trim()} postgres://${this.dest.u}:${this.dest.p}@${this.dest.domain}:${this.dest.port}/${this.dest.dbname}`;
         ready = (this.source.url.trim().length > 0 && 
             this.dest.u.trim().length > 0 &&
             this.dest.p.trim().length > 0 &&
@@ -69,7 +70,7 @@ export class HomePage implements OnInit {
       case 'postgres':
       case 'redshift':
         this.maskedCommandLine = `pgloader\n ${this.sourceType}://${this.source.u}:${'*'.repeat(this.source.p.length)}@${this.source.domain}:${this.source.port}/${this.source.dbname}\n ${this.source.url.trim()} postgres://${this.dest.u}:${'*'.repeat(this.dest.p.length)}@${this.dest.domain}:${this.dest.port}/${this.dest.dbname}`;
-        this.commandline = `pgloader ${this.sourceType}://${this.source.u}:${this.source.p}@${this.source.domain}:${this.source.port}/${this.source.dbname} ${this.source.url.trim()} postgres://${this.dest.u}:${'*'.repeat(this.dest.p.length)}@${this.dest.domain}:${this.dest.port}/${this.dest.dbname}`;
+        this.commandline = `${this.sourceType}://${this.source.u}:${this.source.p}@${this.source.domain}:${this.source.port}/${this.source.dbname} ${this.source.url.trim()} postgres://${this.dest.u}:${'*'.repeat(this.dest.p.length)}@${this.dest.domain}:${this.dest.port}/${this.dest.dbname}`;
         ready = (
           this.source.domain.trim().length > 0 &&
           this.source.dbname.trim().length > 0 &&
@@ -92,8 +93,10 @@ export class HomePage implements OnInit {
     });
     this.result = '';
     await loading.present();
+    if (!this.id) { this.id = this.uuid(); }    
     this.http.post('/run', {
-      commandline: this.commandline
+      commandline: this.commandline,
+      id: this.id
     }).subscribe((data: any) => {
       console.log('*** response data', data);
       loading.dismiss();
@@ -115,6 +118,14 @@ export class HomePage implements OnInit {
     var titleELe = document.getElementById(label);
     this.content.scrollToPoint(0, titleELe.offsetTop, 1000);
   }
+  uuid() {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (char) => {
+      let random = Math.random() * 16 | 0; // Nachkommastellen abschneiden
+      let value = char === "x" ? random : (random % 4 + 8); // Bei x Random 0-15 (0-F), bei y Random 0-3 + 8 = 8-11 (8-b) gemäss RFC 4122
+      return value.toString(16);     
+    });
+  }
+  
 }
 
 // db://user:pass@host:port/dbname

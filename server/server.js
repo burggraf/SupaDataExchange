@@ -36,11 +36,12 @@ http.createServer(function (req, res) {
       res.end(data);
     });  
   }
-  console.log('listening on port 8080');
 }).listen(8080);
+console.log(`listening on port 8080: ${new Date()}`);
 
 function run_exchange(data) {
   let { source, destination, commandline } = data;
+  const id = data.id || uuid();
   if (!commandline) {
     if (source.u && source.p && source.address.substr(0, 11) === 'postgres://') {
       source.address = source.address.replace('postgres://', `postgres://${source.u}:${source.p}@`);
@@ -48,7 +49,9 @@ function run_exchange(data) {
     if (destination.u && destination.p && destination.address.substr(0, 11) === 'postgres://') {
       destination.address = destination.address.replace('postgres://', `postgres://${destination.u}:${destination.p}@`);
     }
-    commandline = `/app/pgloader --type ${source.type} ${source.address} ${destination.address}`;  
+    commandline = `pgloader --type ${source.type} --root-dir /tmp/pgloader/${id} ${source.address} ${destination.address}`;  
+  } else {
+    commandline = `pgloader --root-dir /tmp/pgloader/${id} ${commandline}`;
   }
   console.log(commandline);
   return new Promise((resolve, reject) => {
@@ -62,5 +65,14 @@ function run_exchange(data) {
       }
     });
   
+  });
+
+
+}
+function uuid() {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (char) => {
+    let random = Math.random() * 16 | 0; // Nachkommastellen abschneiden
+    let value = char === "x" ? random : (random % 4 + 8); // Bei x Random 0-15 (0-F), bei y Random 0-3 + 8 = 8-11 (8-b) gemäss RFC 4122
+    return value.toString(16);     
   });
 }

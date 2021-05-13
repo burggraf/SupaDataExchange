@@ -1,13 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { LoadingController } from '@ionic/angular';
-
+import { IonContent } from '@ionic/angular';
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
 })
 export class HomePage implements OnInit {
+  @ViewChild(IonContent, { static: false }) content: IonContent;
   public commandline = '';
   public maskedCommandLine = '';
   public sourceType = 'csv';
@@ -101,14 +102,19 @@ export class HomePage implements OnInit {
       } else {
         this.result = data.result;
       }      
+      this.scrollToLabel('results');
     }, error => {
       console.log(error);
       this.result = JSON.stringify(error);
+      this.scrollToLabel('results');
       loading.dismiss();
     });
   }
 
-
+  scrollToLabel(label) {
+    var titleELe = document.getElementById(label);
+    this.content.scrollToPoint(0, titleELe.offsetTop, 1000);
+  }
 }
 
 // db://user:pass@host:port/dbname

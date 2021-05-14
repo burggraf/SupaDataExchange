@@ -2,6 +2,8 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { LoadingController } from '@ionic/angular';
 import { IonContent } from '@ionic/angular';
+import { Router } from '@angular/router';
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
@@ -39,12 +41,42 @@ export class HomePage implements OnInit {
     'redshift': 'Redshift'
   };
   public result = '';
+  public saveCheckbox: boolean = false;
+  public configurationName = '';
+  public configurations = [];
+  public mode = 'edit';
+
   constructor(
     private http: HttpClient,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private router: Router,
   ) { }
 
   ngOnInit() {
+    const currentID = localStorage.getItem('currentID');
+    console.log('currentID', currentID);
+    if (currentID) {
+      let strConfigs = localStorage.getItem('configurations');
+      let configs = [];
+      if (strConfigs) {
+        configs = JSON.parse(strConfigs);
+        console.log('configs', configs);
+      }
+      const index = configs.findIndex(c => c.id == currentID);
+      console.log('index', index);
+      if (index > -1) {
+        const config = configs[index];
+        console.log('config is', config);
+        this.id = config.id;
+        this.sourceType = config.sourceType;
+        this.source = config.source;
+        this.dest = config.dest;
+        this.saveCheckbox = true;
+        this.configurationName = config.name;
+      }  
+      this.configurations = configs;
+    }
+
   }
   readyToImport() {
     let ready = false;
@@ -63,7 +95,6 @@ export class HomePage implements OnInit {
             this.dest.port.trim().length > 0 &&
             this.dest.dbname.trim().length > 0
             );  
-        return ready;        
         break;
       case 'mysql':
       case 'mssql':
@@ -80,9 +111,9 @@ export class HomePage implements OnInit {
             this.dest.port.trim().length > 0 &&
             this.dest.dbname.trim().length > 0
             );
-            return ready;      
         break;
     }
+    return ready;
   }
 
   async run() {
@@ -124,6 +155,85 @@ export class HomePage implements OnInit {
       let value = char === "x" ? random : (random % 4 + 8); // Bei x Random 0-15 (0-F), bei y Random 0-3 + 8 = 8-11 (8-b) gemäss RFC 4122
       return value.toString(16);     
     });
+  }
+  save() {
+    console.log('save...');
+    if (!this.id) {
+      this.id = this.uuid();
+    }
+    const index = this.configurations.findIndex(c => c.id == this.id);
+    console.log('index', index);
+    if (!this.saveCheckbox && index > -1) {
+      this.configurations.splice(index, 1);
+      localStorage.setItem('configurations', JSON.stringify(this.configurations));
+      localStorage.setItem('currentID', '');  
+      console.log('this.configurations', this.configurations);
+    }
+    if (!this.configurationName || !this.saveCheckbox) {
+      return;
+    }
+    if (!this.readyToImport()) {
+      return;
+    }
+    const config = {
+      id: this.id,
+      name: this.configurationName,
+      sourceType: this.sourceType,
+      source: this.source,
+      dest: this.dest
+    }
+    if (index < 0) {
+      this.configurations.push(config);
+    } else {
+      this.configurations[index] = config;
+    }
+    localStorage.setItem('configurations', JSON.stringify(this.configurations));
+    localStorage.setItem('currentID', this.id);
+    console.log('saved...');
+  }
+  list() {
+    console.log('this.mode', this.mode);
+    if (this.mode === 'list') {
+      this.mode = 'edit';
+    } else {
+      this.mode = 'list';
+    }
+    console.log('this.mode', this.mode);
+  }
+  load(config) {
+    console.log('load config', config);
+    this.id = config.id;
+    this.configurationName = config.name;
+    this.sourceType = config.sourceType;
+    this.source = config.source;
+    this.dest = config.dest;
+    this.mode = 'edit';
+  }
+  add() {
+    this.source = {
+      u: '',
+      p: '',
+      domain: '',
+      port: '',
+      dbname: '',
+      url: ''
+    };
+    this.dest = {
+      u: 'postgres',
+      p: '',
+      domain: 'db.xxxxxxxxxxxxxxxxxxxx.supabase.co',
+      port: '5432',
+      dbname: 'postgres'
+    };
+    this.id = this.uuid();
+    this.configurationName = '';
+    this.saveCheckbox = false;
+  }
+  duplicate() {
+    this.id = this.uuid();
+    this.configurationName = this.configurationName + ' copy';
+    this.saveCheckbox = true;
+    this.save();
   }
   
 }

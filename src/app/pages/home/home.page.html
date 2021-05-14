@@ -4,17 +4,41 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>SupaDataExchange</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="add()" *ngIf="configurations?.length > 0 && mode === 'edit'">
+        <ion-icon slot="icon-only" name="add"></ion-icon>
+      </ion-button>
+
+      <ion-button (click)="duplicate()" *ngIf="configurations?.length > 0 && mode === 'edit'">
+        <ion-icon slot="icon-only" name="duplicate-outline"></ion-icon>
+      </ion-button>
+
+      <ion-button (click)="list()" *ngIf="configurations?.length > 0">
+        <ion-icon slot="icon-only" name="list"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <div class="ion-padding">
 
+    <ion-list *ngIf="mode === 'list'">
+      <ion-list-header>
+        <ion-label>
+          <b>Select a saved configuration:</b>
+        </ion-label>
+      </ion-list-header>
+      <ion-item *ngFor="let config of configurations; let i = index;" (click)="load(config)">
+        {{ config.name }}
+      </ion-item>
+    </ion-list>
+    
   <!-- Segment buttons with the first checked and the last disabled -->
-<ion-label>
+<ion-label *ngIf="mode === 'edit'">
   <b>Input Type:</b> {{ sourceTypeDescription[sourceType] }}
 </ion-label><br/><br/>
-<ion-segment [(ngModel)]="sourceType" scrollable="true">
+<ion-segment [(ngModel)]="sourceType" scrollable="true" (ionChange)="save()" *ngIf="mode === 'edit'">
   <ion-segment-button value="csv" style="--border-width: 1px;--border-style: solid;">
     <ion-label>CSV</ion-label>
   </ion-segment-button>
@@ -41,7 +65,7 @@
   </ion-segment-button>
 </ion-segment>
 
-<ion-list>
+<ion-list *ngIf="mode === 'edit'">
   <ion-list-header>
     <ion-label>
       <b>Configure Source</b>
@@ -50,32 +74,32 @@
 
   <ion-item *ngIf="sourceType==='csv'||sourceType==='fixed'||sourceType==='db3'||sourceType==='sqlite'">
     <ion-label position="fixed"><b>URL</b></ion-label>
-    <ion-input [(ngModel)]="source.url" placeholder="enter url to source file" autocomplete="off"></ion-input>
+    <ion-input (ionChange)="save()" [(ngModel)]="source.url" placeholder="enter url to source file" autocomplete="off"></ion-input>
   </ion-item>  
   <ion-item *ngIf="sourceType==='mysql'||sourceType==='mssql'||sourceType==='postgres'||sourceType==='redshift'">
     <ion-label position="fixed"><b>Host Domain</b></ion-label>
-    <ion-input [(ngModel)]="source.domain" placeholder="enter host domain" autocomplete="off"></ion-input>
+    <ion-input (ionChange)="save()" [(ngModel)]="source.domain" placeholder="enter host domain" autocomplete="off"></ion-input>
   </ion-item>  
   <ion-item *ngIf="sourceType==='mysql'||sourceType==='mssql'||sourceType==='postgres'||sourceType==='redshift'">
     <ion-label position="fixed"><b>Host Port</b></ion-label>
-    <ion-input [(ngModel)]="source.port" placeholder="enter host port" autocomplete="off"></ion-input>
+    <ion-input (ionChange)="save()" [(ngModel)]="source.port" placeholder="enter host port" autocomplete="off"></ion-input>
   </ion-item>  
   <ion-item *ngIf="sourceType==='mysql'||sourceType==='mssql'||sourceType==='postgres'||sourceType==='redshift'">
     <ion-label position="fixed"><b>Database</b></ion-label>
-    <ion-input [(ngModel)]="source.dbname" placeholder="enter database name" autocomplete="off"></ion-input>
+    <ion-input (ionChange)="save()" [(ngModel)]="source.dbname" placeholder="enter database name" autocomplete="off"></ion-input>
   </ion-item>  
 
   <ion-item *ngIf="sourceType==='mysql'||sourceType==='mssql'||sourceType==='postgres'||sourceType==='redshift'">
     <ion-label position="fixed"><b>Username</b></ion-label>
-    <ion-input [(ngModel)]="source.u" placeholder="enter username" autocomplete="off"></ion-input>
+    <ion-input (ionChange)="save()" [(ngModel)]="source.u" placeholder="enter username" autocomplete="off"></ion-input>
   </ion-item>  
   <ion-item *ngIf="sourceType==='mysql'||sourceType==='mssql'||sourceType==='postgres'||sourceType==='redshift'">
     <ion-label position="fixed"><b>Password</b></ion-label>
-    <ion-input [(ngModel)]="source.p" type="password" placeholder="enter password" autocomplete="off"></ion-input>
+    <ion-input (ionChange)="save()" [(ngModel)]="source.p" type="password" placeholder="enter password" autocomplete="off"></ion-input>
   </ion-item>  
 </ion-list>
 
-<ion-list>
+<ion-list *ngIf="mode === 'edit'">
   <ion-list-header>
     <ion-label>
       <b>Configure Destination</b>
@@ -83,38 +107,52 @@
   </ion-list-header>
   <ion-item>
     <ion-label position="fixed"><b>Host Domain</b></ion-label>
-    <ion-input [(ngModel)]="dest.domain" placeholder="enter host domain" autocomplete="off"></ion-input>
+    <ion-input (ionChange)="save()" [(ngModel)]="dest.domain" placeholder="enter host domain" autocomplete="off"></ion-input>
   </ion-item>  
   <ion-item>
     <ion-label position="fixed"><b>Host Port</b></ion-label>
-    <ion-input [(ngModel)]="dest.port" placeholder="enter host port" autocomplete="off"></ion-input>
+    <ion-input (ionChange)="save()" [(ngModel)]="dest.port" placeholder="enter host port" autocomplete="off"></ion-input>
   </ion-item>  
   <ion-item>
     <ion-label position="fixed"><b>Database</b></ion-label>
-    <ion-input [(ngModel)]="dest.dbname" placeholder="enter database name" autocomplete="off"></ion-input>
+    <ion-input (ionChange)="save()" [(ngModel)]="dest.dbname" placeholder="enter database name" autocomplete="off"></ion-input>
   </ion-item>  
 
   <ion-item>
     <ion-label position="fixed"><b>Username</b></ion-label>
-    <ion-input [(ngModel)]="dest.u" placeholder="enter username" autocomplete="off"></ion-input>
+    <ion-input (ionChange)="save()" [(ngModel)]="dest.u" placeholder="enter username" autocomplete="off"></ion-input>
   </ion-item>  
   <ion-item>
     <ion-label position="fixed"><b>Password</b></ion-label>
-    <ion-input [(ngModel)]="dest.p" type="password" placeholder="enter password" autocomplete="off"></ion-input>
+    <ion-input (ionChange)="save()" [(ngModel)]="dest.p" type="password" placeholder="enter password" autocomplete="off"></ion-input>
   </ion-item>  
-
 
 </ion-list>
 
-<div class="ion-padding">
+
+<ion-list *ngIf="mode === 'edit'">
+  <ion-list-header>
+    <ion-label>
+      <b>Save this configuration? &nbsp;&nbsp; <ion-checkbox (ionChange)="save()" [(ngModel)]="saveCheckbox" checked="true"></ion-checkbox></b>
+    </ion-label>
+  </ion-list-header>
+
+  <ion-item *ngIf="saveCheckbox">
+    <ion-label position="fixed"><b>Name</b></ion-label>
+    <ion-input (ionChange)="save()" [(ngModel)]="configurationName" placeholder="enter a name for this import configuration"></ion-input>
+  </ion-item>  
+
+</ion-list>
+
+<div class="ion-padding" *ngIf="mode === 'edit'">
   <ion-button [disabled]="!readyToImport()" expand="block" color="primary" (click)="run()"><b>Import Now</b></ion-button>
 </div>
 
-<pre style="font-weight:bold;">
+<pre style="font-weight:bold;" *ngIf="mode === 'edit'">
   {{ maskedCommandLine }}
 </pre>
 
-<div class="ion-padding" id="results">
+<div class="ion-padding" id="results" *ngIf="mode === 'edit'">
   <pre>{{ result }}</pre>
 </div>
 

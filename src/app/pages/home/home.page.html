@@ -82,6 +82,13 @@
       <b>Configure Source Fields</b>
     </ion-label>
   </ion-list-header>
+  
+  <ion-list-header *ngIf="sourceType==='csv'">
+    <ion-item>
+      <ion-label position="fixed"><b>Delimiter</b></ion-label>
+      <ion-input (ionChange)="save()" [(ngModel)]="source.fieldDelimiter" autocomplete="off" style="width: 40px;border: 1px solid gray;"></ion-input>
+    </ion-item>
+  </ion-list-header>
 
   <ion-list-header *ngIf="sourceType==='csv'">
     <ion-label>
@@ -91,7 +98,7 @@
   </ion-list-header>
 
   <ion-item *ngIf="sourceType==='csv'">
-    <ion-textarea [(ngModel)]="source.fields"
+    <ion-textarea auto-grow="true" (ionChange)="save()" [(ngModel)]="source.fields"
     placeholder="field1, field2, field3, field4">
     </ion-textarea>
   </ion-item> 

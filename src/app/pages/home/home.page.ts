@@ -22,6 +22,7 @@ export class HomePage implements OnInit {
     dbname: '',
     url: '',
     fields: '',
+    fieldDelimiter: ','
   };
   public dest = {
     u: 'postgres',
@@ -75,6 +76,26 @@ export class HomePage implements OnInit {
     let ready = false;
     switch (this.sourceType) {
       case 'csv':
+        this.commandline = `--type ${this.sourceType}`;
+        this.commandline += ` --field "${this.source.fields.replace(/ /g, '')}"`;
+        this.commandline += ` --with "fields terminated by '${this.source.fieldDelimiter}'"`;
+        this.commandline += ` --with "fields not enclosed"`; // TAB
+        this.commandline += ` ${this.source.url.trim()} postgres://${this.dest.u}:${this.dest.p}@${this.dest.domain}:${this.dest.port}/${this.dest.dbname}`;
+
+        this.maskedCommandLine = `pgloader --type ${this.sourceType}`;
+        this.maskedCommandLine += ` --field "${this.source.fields.replace(/ /g, '')}"`;
+        this.maskedCommandLine += ` --with "fields terminated by '${this.source.fieldDelimiter}'"`;
+        this.maskedCommandLine += ` --with "fields not enclosed"`; // TAB
+        this.maskedCommandLine += ` ${this.source.url.trim()} postgres://${this.dest.u}:${'*'.repeat(this.dest.p.length)}@${this.dest.domain}:${this.dest.port}/${this.dest.dbname}`;
+        ready =
+          this.source.url.trim().length > 0 &&
+          this.dest.u.trim().length > 0 &&
+          this.dest.p.trim().length > 0 &&
+          this.dest.domain.trim().length > 0 &&
+          this.dest.port.trim().length > 0 &&
+          this.dest.dbname.trim().length > 0;
+          ready = ready && this.source.fields?.trim().length > 0;
+        break;
       case 'fixed':
       case 'db3':
       case 'sqlite':
@@ -96,9 +117,6 @@ export class HomePage implements OnInit {
           this.dest.domain.trim().length > 0 &&
           this.dest.port.trim().length > 0 &&
           this.dest.dbname.trim().length > 0;
-        if (this.sourceType === 'csv') {
-          ready = this.source.fields?.trim().length > 0;
-        }
         break;
       case 'mysql':
       case 'mssql':
@@ -145,7 +163,7 @@ export class HomePage implements OnInit {
       this.id = this.uuid();
     }
     this.http
-      .post('/run', {
+      .post('http://localhost:8080/run', {
         commandline: this.commandline,
         id: this.id,
       })
@@ -244,6 +262,7 @@ export class HomePage implements OnInit {
       dbname: '',
       url: '',
       fields: '',
+      fieldDelimiter: ','
     };
     this.dest = {
       u: 'postgres',
@@ -272,7 +291,7 @@ export class HomePage implements OnInit {
     await loading.present();
 
     let headers = new HttpHeaders()
-      .set('Range', 'bytes=0-2048')
+      .set('Range', 'bytes=0-4096')
       .set('X-Requested-With', 'postgres-import-data');
     // https://github.com/bridgedxyz/base
     this.http
@@ -285,6 +304,9 @@ export class HomePage implements OnInit {
       )
       .subscribe((response) => {
         console.log(response);
+        const fields = response.split('\n')[0];
+        const rx = new RegExp(this.source.fieldDelimiter,'g');
+        this.source.fields = fields.replace(rx, ', ');
         loading.dismiss();
       },((error) => {
         console.error('Error', error);

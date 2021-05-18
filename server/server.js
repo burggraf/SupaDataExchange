@@ -25,8 +25,12 @@ http.createServer(function (req, res) {
     });
     return; 
   } else {
-    // fs.readFile("../www/" + req.url, function (err,data) {
-    fs.readFile("./" + req.url, function (err,data) {
+    let folder = './';
+    if (fs.existsSync('../www')) {
+      folder = '../www/'
+    }
+    fs.readFile(folder + req.url, function (err,data) {
+    // fs.readFile("./" + req.url, function (err,data) {
       if (err) {
         res.writeHead(404);
         res.end(JSON.stringify(err));

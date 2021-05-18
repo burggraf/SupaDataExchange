@@ -75,7 +75,27 @@
   <ion-item *ngIf="sourceType==='csv'||sourceType==='fixed'||sourceType==='db3'||sourceType==='sqlite'">
     <ion-label position="fixed"><b>URL</b></ion-label>
     <ion-input (ionChange)="save()" [(ngModel)]="source.url" placeholder="enter url to source file" autocomplete="off"></ion-input>
-  </ion-item>  
+  </ion-item>
+
+  <ion-list-header *ngIf="sourceType==='csv'">
+    <ion-label>
+      <b>Configure Source Fields</b>
+    </ion-label>
+  </ion-list-header>
+
+  <ion-list-header *ngIf="sourceType==='csv'">
+    <ion-label>
+      <b>Source includes header line with field names &nbsp;&nbsp; <ion-checkbox [(ngModel)]="header" checked="true"></ion-checkbox></b>
+      &nbsp;&nbsp; <ion-button *ngIf="header && source.url.trim().length > 0" (click)="importFieldsFromHeader()" size="small" color="primary" fill="solid"><b>import field names</b></ion-button>
+    </ion-label>
+  </ion-list-header>
+
+  <ion-item *ngIf="sourceType==='csv'">
+    <ion-textarea [(ngModel)]="source.fields"
+    placeholder="field1, field2, field3, field4">
+    </ion-textarea>
+  </ion-item> 
+  
   <ion-item *ngIf="sourceType==='mysql'||sourceType==='mssql'||sourceType==='postgres'||sourceType==='redshift'">
     <ion-label position="fixed"><b>Host Domain</b></ion-label>
     <ion-input (ionChange)="save()" [(ngModel)]="source.domain" placeholder="enter host domain" autocomplete="off"></ion-input>

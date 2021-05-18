@@ -1,8 +1,7 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { LoadingController } from '@ionic/angular';
 import { IonContent } from '@ionic/angular';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -21,62 +20,56 @@ export class HomePage implements OnInit {
     domain: '',
     port: '',
     dbname: '',
-    url: ''
+    url: '',
+    fields: '',
   };
   public dest = {
     u: 'postgres',
     p: '',
     domain: 'db.xxxxxxxxxxxxxxxxxxxx.supabase.co',
     port: '5432',
-    dbname: 'postgres'
+    dbname: 'postgres',
   };
   public sourceTypeDescription = {
-    'csv': 'CSV / Tab / Delimited File',
-    'fixed': 'Fixed Format File / IBM IXF',
-    'db3': 'dBase DBF Format (DB3)',
-    'sqlite': 'SQLite File',
-    'mysql': 'MySQL',
-    'mssql': 'Microsoft SQL Server',
-    'postgres': 'PostgreSQL',
-    'redshift': 'Redshift'
+    csv: 'CSV / Tab / Delimited File',
+    fixed: 'Fixed Format File / IBM IXF',
+    db3: 'dBase DBF Format (DB3)',
+    sqlite: 'SQLite File',
+    mysql: 'MySQL',
+    mssql: 'Microsoft SQL Server',
+    postgres: 'PostgreSQL',
+    redshift: 'Redshift',
   };
   public result = '';
   public saveCheckbox: boolean = false;
   public configurationName = '';
   public configurations = [];
   public mode = 'edit';
+  public header = true;
 
   constructor(
     private http: HttpClient,
     private loadingController: LoadingController,
-    private router: Router,
-  ) { }
+  ) {}
 
-  ngOnInit() {
-    const currentID = localStorage.getItem('currentID');
+  ngOnInit() {}
+  ionViewWillEnter() {
+    const currentID = localStorage.getItem('currentID') || '';
     console.log('currentID', currentID);
-    if (currentID) {
-      let strConfigs = localStorage.getItem('configurations');
-      let configs = [];
-      if (strConfigs) {
-        configs = JSON.parse(strConfigs);
-        console.log('configs', configs);
-      }
-      const index = configs.findIndex(c => c.id == currentID);
-      console.log('index', index);
-      if (index > -1) {
-        const config = configs[index];
-        console.log('config is', config);
-        this.id = config.id;
-        this.sourceType = config.sourceType;
-        this.source = config.source;
-        this.dest = config.dest;
-        this.saveCheckbox = true;
-        this.configurationName = config.name;
-      }  
-      this.configurations = configs;
+    let strConfigs = localStorage.getItem('configurations');
+    if (strConfigs) {
+      this.configurations = JSON.parse(strConfigs);
     }
-
+    const index = this.configurations.findIndex((c) => c.id == currentID);
+    if (index > -1) {
+      const config = this.configurations[index];
+      this.id = config.id;
+      this.sourceType = config.sourceType;
+      this.source = config.source;
+      this.dest = config.dest;
+      this.saveCheckbox = true;
+      this.configurationName = config.name;
+    }
   }
   readyToImport() {
     let ready = false;
@@ -86,31 +79,55 @@ export class HomePage implements OnInit {
       case 'db3':
       case 'sqlite':
         // postgresql://[user[:password]@][netloc][:port][/dbname][?option=value&...]
-        this.maskedCommandLine = `pgloader --type ${this.sourceType}\n ${this.source.url.trim()}\n postgres://${this.dest.u}:${'*'.repeat(this.dest.p.length)}@${this.dest.domain}:${this.dest.port}/${this.dest.dbname}`;
-        this.commandline = `--type ${this.sourceType} ${this.source.url.trim()} postgres://${this.dest.u}:${this.dest.p}@${this.dest.domain}:${this.dest.port}/${this.dest.dbname}`;
-        ready = (this.source.url.trim().length > 0 && 
-            this.dest.u.trim().length > 0 &&
-            this.dest.p.trim().length > 0 &&
-            this.dest.domain.trim().length > 0 &&
-            this.dest.port.trim().length > 0 &&
-            this.dest.dbname.trim().length > 0
-            );  
+        this.maskedCommandLine = `pgloader --type ${
+          this.sourceType
+        }\n ${this.source.url.trim()}\n postgres://${this.dest.u}:${'*'.repeat(
+          this.dest.p.length
+        )}@${this.dest.domain}:${this.dest.port}/${this.dest.dbname}`;
+        this.commandline = `--type ${
+          this.sourceType
+        } ${this.source.url.trim()} postgres://${this.dest.u}:${this.dest.p}@${
+          this.dest.domain
+        }:${this.dest.port}/${this.dest.dbname}`;
+        ready =
+          this.source.url.trim().length > 0 &&
+          this.dest.u.trim().length > 0 &&
+          this.dest.p.trim().length > 0 &&
+          this.dest.domain.trim().length > 0 &&
+          this.dest.port.trim().length > 0 &&
+          this.dest.dbname.trim().length > 0;
+        if (this.sourceType === 'csv') {
+          ready = this.source.fields?.trim().length > 0;
+        }
         break;
       case 'mysql':
       case 'mssql':
       case 'postgres':
       case 'redshift':
-        this.maskedCommandLine = `pgloader\n ${this.sourceType}://${this.source.u}:${'*'.repeat(this.source.p.length)}@${this.source.domain}:${this.source.port}/${this.source.dbname}\n ${this.source.url.trim()} postgres://${this.dest.u}:${'*'.repeat(this.dest.p.length)}@${this.dest.domain}:${this.dest.port}/${this.dest.dbname}`;
-        this.commandline = `${this.sourceType}://${this.source.u}:${this.source.p}@${this.source.domain}:${this.source.port}/${this.source.dbname} ${this.source.url.trim()} postgres://${this.dest.u}:${'*'.repeat(this.dest.p.length)}@${this.dest.domain}:${this.dest.port}/${this.dest.dbname}`;
-        ready = (
+        this.maskedCommandLine = `pgloader\n ${this.sourceType}://${
+          this.source.u
+        }:${'*'.repeat(this.source.p.length)}@${this.source.domain}:${
+          this.source.port
+        }/${this.source.dbname}\n ${this.source.url.trim()} postgres://${
+          this.dest.u
+        }:${'*'.repeat(this.dest.p.length)}@${this.dest.domain}:${
+          this.dest.port
+        }/${this.dest.dbname}`;
+        this.commandline = `${this.sourceType}://${this.source.u}:${
+          this.source.p
+        }@${this.source.domain}:${this.source.port}/${
+          this.source.dbname
+        } ${this.source.url.trim()} postgres://${this.dest.u}:${'*'.repeat(
+          this.dest.p.length
+        )}@${this.dest.domain}:${this.dest.port}/${this.dest.dbname}`;
+        ready =
           this.source.domain.trim().length > 0 &&
           this.source.dbname.trim().length > 0 &&
           this.dest.u.trim().length > 0 &&
-            this.dest.p.trim().length > 0 &&
-            this.dest.domain.trim().length > 0 &&
-            this.dest.port.trim().length > 0 &&
-            this.dest.dbname.trim().length > 0
-            );
+          this.dest.p.trim().length > 0 &&
+          this.dest.domain.trim().length > 0 &&
+          this.dest.port.trim().length > 0 &&
+          this.dest.dbname.trim().length > 0;
         break;
     }
     return ready;
@@ -120,29 +137,36 @@ export class HomePage implements OnInit {
     console.log('*** calling http.post -> /run');
     const loading = await this.loadingController.create({
       /// cssClass: 'my-custom-class',
-      message: 'Importing data...please wait...'
+      message: 'Importing data...please wait...',
     });
     this.result = '';
     await loading.present();
-    if (!this.id) { this.id = this.uuid(); }    
-    this.http.post('/run', {
-      commandline: this.commandline,
-      id: this.id
-    }).subscribe((data: any) => {
-      console.log('*** response data', data);
-      loading.dismiss();
-      if (data.error) {
-        this.result = data.error;
-      } else {
-        this.result = data.result;
-      }      
-      this.scrollToLabel('results');
-    }, error => {
-      console.log(error);
-      this.result = JSON.stringify(error);
-      this.scrollToLabel('results');
-      loading.dismiss();
-    });
+    if (!this.id) {
+      this.id = this.uuid();
+    }
+    this.http
+      .post('/run', {
+        commandline: this.commandline,
+        id: this.id,
+      })
+      .subscribe(
+        (data: any) => {
+          console.log('*** response data', data);
+          loading.dismiss();
+          if (data.error) {
+            this.result = data.error;
+          } else {
+            this.result = data.result;
+          }
+          this.scrollToLabel('results');
+        },
+        (error) => {
+          console.log(error);
+          this.result = JSON.stringify(error);
+          this.scrollToLabel('results');
+          loading.dismiss();
+        }
+      );
   }
 
   scrollToLabel(label) {
@@ -150,10 +174,10 @@ export class HomePage implements OnInit {
     this.content.scrollToPoint(0, titleELe.offsetTop, 1000);
   }
   uuid() {
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (char) => {
-      let random = Math.random() * 16 | 0; // Nachkommastellen abschneiden
-      let value = char === "x" ? random : (random % 4 + 8); // Bei x Random 0-15 (0-F), bei y Random 0-3 + 8 = 8-11 (8-b) gemäss RFC 4122
-      return value.toString(16);     
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
+      let random = (Math.random() * 16) | 0; // Nachkommastellen abschneiden
+      let value = char === 'x' ? random : (random % 4) + 8; // Bei x Random 0-15 (0-F), bei y Random 0-3 + 8 = 8-11 (8-b) gemäss RFC 4122
+      return value.toString(16);
     });
   }
   save() {
@@ -161,12 +185,15 @@ export class HomePage implements OnInit {
     if (!this.id) {
       this.id = this.uuid();
     }
-    const index = this.configurations.findIndex(c => c.id == this.id);
-    console.log('index', index);
+    const index = this.configurations.findIndex((c) => c.id == this.id);
     if (!this.saveCheckbox && index > -1) {
+      // delete this configuration
       this.configurations.splice(index, 1);
-      localStorage.setItem('configurations', JSON.stringify(this.configurations));
-      localStorage.setItem('currentID', '');  
+      localStorage.setItem(
+        'configurations',
+        JSON.stringify(this.configurations)
+      );
+      localStorage.setItem('currentID', '');
       console.log('this.configurations', this.configurations);
     }
     if (!this.configurationName || !this.saveCheckbox) {
@@ -180,19 +207,19 @@ export class HomePage implements OnInit {
       name: this.configurationName,
       sourceType: this.sourceType,
       source: this.source,
-      dest: this.dest
-    }
+      dest: this.dest,
+    };
     if (index < 0) {
       this.configurations.push(config);
     } else {
       this.configurations[index] = config;
     }
+    console.log('*** configurations', this.configurations);
+    console.log('currentID', this.id);
     localStorage.setItem('configurations', JSON.stringify(this.configurations));
     localStorage.setItem('currentID', this.id);
-    console.log('saved...');
   }
   list() {
-    console.log('this.mode', this.mode);
     if (this.mode === 'list') {
       this.mode = 'edit';
     } else {
@@ -201,7 +228,6 @@ export class HomePage implements OnInit {
     console.log('this.mode', this.mode);
   }
   load(config) {
-    console.log('load config', config);
     this.id = config.id;
     this.configurationName = config.name;
     this.sourceType = config.sourceType;
@@ -216,14 +242,15 @@ export class HomePage implements OnInit {
       domain: '',
       port: '',
       dbname: '',
-      url: ''
+      url: '',
+      fields: '',
     };
     this.dest = {
       u: 'postgres',
       p: '',
       domain: 'db.xxxxxxxxxxxxxxxxxxxx.supabase.co',
       port: '5432',
-      dbname: 'postgres'
+      dbname: 'postgres',
     };
     this.id = this.uuid();
     this.configurationName = '';
@@ -235,10 +262,33 @@ export class HomePage implements OnInit {
     this.saveCheckbox = true;
     this.save();
   }
-  
-}
+  async importFieldsFromHeader() {
+    // "Range: bytes=0-1023"
 
-// db://user:pass@host:port/dbname
-// Where db might be of sqlite, mysql or mssql.
-//
-// postgresql://[user[:password]@][netloc][:port][/dbname][?option=value&...]
+    const loading = await this.loadingController.create({
+      message: 'Reading headers from source url...please wait...',
+    });
+
+    await loading.present();
+
+    let headers = new HttpHeaders()
+      .set('Range', 'bytes=0-2048')
+      .set('X-Requested-With', 'postgres-import-data');
+    // https://github.com/bridgedxyz/base
+    this.http
+      .get(
+        'https://cors.bridged.cc/' + this.source.url.replace('https://', ''),
+        {
+          headers: headers,
+          responseType: 'text',
+        }
+      )
+      .subscribe((response) => {
+        console.log(response);
+        loading.dismiss();
+      },((error) => {
+        console.error('Error', error);
+        loading.dismiss();
+      }));
+  }
+}

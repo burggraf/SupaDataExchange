@@ -94,6 +94,15 @@
   </ion-item>
 
   <ion-item *ngIf="sourceType==='csv'">
+    <ion-label position="fixed"><b>Enclosed By</b></ion-label>
+    <ion-input 
+      (ionChange)="save()" 
+      [(ngModel)]="source.fieldsEnclosedBy" 
+      autocomplete="off" style="max-width: 45px; width: 45px;text-align: center;border: 1px solid gray;"></ion-input>      
+  </ion-item>
+
+
+  <ion-item *ngIf="sourceType==='csv'">
     <ion-label position="fixed"><b>Header Line</b></ion-label>
     <ion-checkbox [(ngModel)]="header" checked="true"></ion-checkbox> 
 

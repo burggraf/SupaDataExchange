@@ -22,7 +22,8 @@ export class HomePage implements OnInit {
     dbname: '',
     url: '',
     fields: '',
-    fieldDelimiter: ','
+    fieldDelimiter: ',',
+    fieldsEnclosedBy: ''
   };
   public dest = {
     u: 'postgres',
@@ -80,7 +81,13 @@ export class HomePage implements OnInit {
         this.commandline = `--type ${this.sourceType}`;
         this.commandline += ` --field "${this.source.fields.replace(/ /g, '')}"`;
         this.commandline += ` --with "fields terminated by '${this.source.fieldDelimiter}'"`;
-        this.commandline += ` --with "fields not enclosed"`; // TAB
+        // fields optionally enclosed by '"'
+        if (this.source.fieldsEnclosedBy?.trim().length > 0) {
+          this.commandline += ` --with "fields optionally enclosed by '${this.source.fieldsEnclosedBy.replace(/"/g,'\\"')}'"`; // TAB          
+        } else {
+          this.commandline += ` --with "fields not enclosed"`; // TAB
+        }
+
         this.commandline += ` ${this.source.url.trim()} postgres://${this.dest.u}:${this.dest.p}@${this.dest.domain}:${this.dest.port}/${this.dest.dbname}`;
         this.commandline += `?tablename=${this.dest.tablename}`; 
         
@@ -266,7 +273,8 @@ export class HomePage implements OnInit {
       dbname: '',
       url: '',
       fields: '',
-      fieldDelimiter: ','
+      fieldDelimiter: ',',
+      fieldsEnclosedBy: ''
     };
     this.dest = {
       u: 'postgres',

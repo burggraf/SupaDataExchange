@@ -30,6 +30,7 @@ export class HomePage implements OnInit {
     domain: 'db.xxxxxxxxxxxxxxxxxxxx.supabase.co',
     port: '5432',
     dbname: 'postgres',
+    tablename: ''
   };
   public sourceTypeDescription = {
     csv: 'CSV / Tab / Delimited File',
@@ -81,12 +82,14 @@ export class HomePage implements OnInit {
         this.commandline += ` --with "fields terminated by '${this.source.fieldDelimiter}'"`;
         this.commandline += ` --with "fields not enclosed"`; // TAB
         this.commandline += ` ${this.source.url.trim()} postgres://${this.dest.u}:${this.dest.p}@${this.dest.domain}:${this.dest.port}/${this.dest.dbname}`;
-
+        this.commandline += `?tablename=${this.dest.tablename}`; 
+        
         this.maskedCommandLine = `pgloader --type ${this.sourceType}`;
         this.maskedCommandLine += ` --field "${this.source.fields.replace(/ /g, '')}"`;
         this.maskedCommandLine += ` --with "fields terminated by '${this.source.fieldDelimiter}'"`;
         this.maskedCommandLine += ` --with "fields not enclosed"`; // TAB
         this.maskedCommandLine += ` ${this.source.url.trim()} postgres://${this.dest.u}:${'*'.repeat(this.dest.p.length)}@${this.dest.domain}:${this.dest.port}/${this.dest.dbname}`;
+        this.maskedCommandLine += `?tablename=${this.dest.tablename}`; 
         ready =
           this.source.url.trim().length > 0 &&
           this.dest.u.trim().length > 0 &&
@@ -95,6 +98,7 @@ export class HomePage implements OnInit {
           this.dest.port.trim().length > 0 &&
           this.dest.dbname.trim().length > 0;
           ready = ready && this.source.fields?.trim().length > 0;
+          ready = ready && this.dest.tablename?.trim().length > 0;
         break;
       case 'fixed':
       case 'db3':
@@ -270,6 +274,7 @@ export class HomePage implements OnInit {
       domain: 'db.xxxxxxxxxxxxxxxxxxxx.supabase.co',
       port: '5432',
       dbname: 'postgres',
+      tablename: ''
     };
     this.id = this.uuid();
     this.configurationName = '';

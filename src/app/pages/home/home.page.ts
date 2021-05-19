@@ -320,7 +320,7 @@ export class HomePage implements OnInit {
         console.log(response);
         const fields = response.split('\n')[0];
         const rx = new RegExp(this.source.fieldDelimiter,'g');
-        this.source.fields = fields.replace(rx, ', ');
+        this.source.fields = fields.replace(rx, ', ').replace(/\n/g,'');
         loading.dismiss();
       },((error) => {
         console.error('Error', error);

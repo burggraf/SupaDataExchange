@@ -32,8 +32,10 @@ http.createServer(function (req, res) {
     fs.readFile(folder + req.url, function (err,data) {
     // fs.readFile("./" + req.url, function (err,data) {
       if (err) {
-        res.writeHead(404);
-        res.end(JSON.stringify(err));
+        // res.writeHead(404);
+        // res.end(JSON.stringify(err));
+        res.writeHead(302, {'Location': '/index.html'});
+        res.end();
         return;
       }
       res.writeHead(200);

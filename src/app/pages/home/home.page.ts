@@ -167,7 +167,7 @@ export class HomePage implements OnInit {
       this.id = this.uuid();
     }
     this.http
-      .post('http://localhost:8080/run', {
+      .post('/run', {
         commandline: this.commandline,
         id: this.id,
       })

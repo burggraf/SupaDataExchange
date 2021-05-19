@@ -288,6 +288,7 @@ export class HomePage implements OnInit {
   }
   async importFieldsFromHeader() {
     // "Range: bytes=0-1023"
+    console.log('importFieldsFromHeader...');
 
     const loading = await this.loadingController.create({
       message: 'Reading headers from source url...please wait...',
@@ -301,7 +302,7 @@ export class HomePage implements OnInit {
     // https://github.com/bridgedxyz/base
     this.http
       .get(
-        'https://cors.bridged.cc/' + this.source.url.replace('https://', ''),
+        'https://cors.bridged.cc/' + this.source.url.replace('https://', '').replace('http://',''),
         {
           headers: headers,
           responseType: 'text',

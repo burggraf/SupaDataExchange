@@ -96,12 +96,14 @@
   <ion-item *ngIf="sourceType==='csv'">
     <ion-label position="fixed"><b>Header Line</b></ion-label>
     <ion-checkbox [(ngModel)]="header" checked="true"></ion-checkbox> 
-    &nbsp;&nbsp;
+
+  </ion-item>
+
+  <ion-item *ngIf="sourceType==='csv' && header && source.url.trim().length > 0">
     <ion-button 
-    *ngIf="header && source.url.trim().length > 0" 
     (click)="importFieldsFromHeader()" 
     size="small" color="primary" fill="solid">
-    <b>import field names</b>
+    <b>import field names from source url</b>
     </ion-button>
 
   </ion-item>
